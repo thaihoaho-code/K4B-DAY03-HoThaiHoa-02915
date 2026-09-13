@@ -9,13 +9,13 @@
 ## 1. BẢNG CHẤM ĐIỂM AGENTIC FIT SCORING MATRIX (ĐÁNH GIÁ CHỦ ĐỀ)
 
 | Tiêu chí Đánh giá | Mức độ (1 - 5) | Giải trình chi tiết lý do chọn điểm |
-| :--- | :---:  :--- |
-| **1. Multi-step Reasoning** | 3 / 5 | Một yêu cầu có thể bao gồm nhiều bước: xác định đơn hàng -> tra cứu mã vận đơn -> lấy trạng thái từ đơn vị vận chuyển -> kiểm tra vị trí hàng trong kho -> đối chiếu thông tin -> trả kết quả hoặc cập nhật trạng thái. Tuy nhiên với case này, quy trình tương đối rõ và không quá phức tạp|
-| **2. Tool Interaction** | 5 / 5 | Agent cần tương tác với OMS/WMS, database kho, API đơn vị vận chuyển, ERP hoặc MCP Server để đọc và cập nhật dữ liệu. Một yêu cầu có thể gọi nhiều tool khác nhau |
-| **3. Dynamic Decision** | 4 / 5 | Có. Ví dụ: nếu vận đơn chưa được tạo thì kiểm tra trạng thái đóng gói, nếu trạng thái giữa WMS và carrier không khớp thì cần kiểm tra hoặc báo bất thường. |
+| :--- | :---: | :--- |
+| **1. Multi-step Reasoning** | 3 / 5 | Một yêu cầu có thể bao gồm nhiều bước: xác định đơn hàng -> tra cứu mã vận đơn -> lấy trạng thái từ đơn vị vận chuyển -> kiểm tra vị trí hàng trong kho -> đối chiếu thông tin -> trả kết quả hoặc cập nhật trạng thái. Tuy nhiên với case này, quy trình tương đối rõ và không quá phức tạp. |
+| **2. Tool Interaction** | 5 / 5 | Agent cần tương tác với OMS/WMS, database kho, API đơn vị vận chuyển, ERP hoặc MCP Server để đọc và cập nhật dữ liệu. Một yêu cầu có thể gọi nhiều tool khác nhau. |
+| **3. Dynamic Decision** | 4 / 5 | Có. Ví dụ: nếu vận đơn chưa được tạo thì kiểm tra trạng thái đóng gói; nếu trạng thái giữa WMS và carrier không khớp thì cần kiểm tra hoặc báo bất thường. |
 | **4. Long Horizon Goal** | 2 / 5 | Phần lớn chức năng sẽ hoàn thành trong thời gian ngắn. Ví dụ như: "đơn hàng tới đâu rồi?", Agent chưa cần duy trì mục tiêu qua nhiều giờ/ngày, trừ khi bổ sung chức năng chủ động theo dõi đơn hàng hoặc xử lý sự cố đến khi hoàn tất. |
 | **TỔNG ĐIỂM AGENTIC FIT** | **14 / 20** | *Nếu tổng điểm > 12/20: Bài toán rất phù hợp triển khai Agentic System.* |
-|
+
 ---
 
 ## 2. TRÍCH XUẤT KẾT QUẢ WATERFALL TRACE LOG (SAU KHI CHẠY TEST SUITE TRÊN API THẬT)
