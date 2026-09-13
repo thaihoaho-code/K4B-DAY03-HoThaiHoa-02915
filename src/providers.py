@@ -37,6 +37,8 @@ class MockOfflineProvider(BaseLLMProvider):
     def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
         prompt_lower = prompt.lower()
         
+        if "kết quả từ" in prompt_lower: return {"type": "text", "content": "Hoàn tất."}
+        
         # Mô phỏng nhận diện intent gọi Tool
         if "dh2026001" in prompt_lower and ("cập nhật" in prompt_lower or "trạng thái" in prompt_lower):
             return {

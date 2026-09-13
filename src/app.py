@@ -71,6 +71,7 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPSupplyChainServer)
     step = 0
     trace_logs = []
     tools_list = mcp_server.list_tools()
+    current_prompt = user_query
     
     while step < MAX_ITERATIONS:
         step += 1
@@ -78,7 +79,7 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPSupplyChainServer)
         print(f"\n--- 🔄 Vòng lặp ReAct Loop (Step {step}/{MAX_ITERATIONS}) ---")
         
         # Gọi LLM với Native Tool Calling Specs
-        llm_response = provider.generate_with_tools(user_query, tools_list, system_prompt=REACT_AGENT_SYSTEM_PROMPT)
+        llm_response = provider.generate_with_tools(current_prompt, tools_list, system_prompt=REACT_AGENT_SYSTEM_PROMPT)
         latency_ms = round((time.time() - step_start_time) * 1000, 2)
         
         thought = llm_response.get("thought", "Đang suy luận...")
@@ -117,7 +118,6 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPSupplyChainServer)
                 obs_str = json.dumps(obs_data, ensure_ascii=False)
                 print(f"👁️ [Observation từ MCP Server]: {obs_str}")
                 
-                # Tổng hợp Final Answer từ kết quả Observation thực tế
                 if obs_data.get("status") == "SUCCESS":
                     if "data" in obs_data:
                         d = obs_data["data"]
@@ -147,20 +147,9 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPSupplyChainServer)
                 "observation": obs_data,
                 "latency_ms": latency_ms
             })
-            
-            # Kết thúc vòng lặp sau khi hoàn tất Observation và xuất Final Answer
-            print(f"🧠 [Thought]: Đã nhận được dữ liệu từ MCP Server. Tổng hợp kết quả phản hồi.")
-            print(f"🏁 [Final Answer]: {final_answer}")
-            
-            trace_logs.append({
-                "step": step + 1,
-                "query": user_query,
-                "action_type": "FINAL_ANSWER",
-                "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-                "output": final_answer,
-                "latency_ms": 10.0
-            })
-            break
+
+            current_prompt += f"\n[Kết quả từ {tool_name}]: {final_answer}\nNếu còn yêu cầu chưa thực hiện, hãy gọi tool tiếp. Nếu xong, trả lời bằng văn bản."
+            print(f"🔄 [System]: Nạp kết quả vào bộ nhớ và tiếp tục ReAct Loop...")
 
     return trace_logs
 
