@@ -148,7 +148,14 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPSupplyChainServer)
                 "latency_ms": latency_ms
             })
 
-            current_prompt += f"\n[Kết quả từ {tool_name}]: {final_answer}\nNếu còn yêu cầu chưa thực hiện, hãy gọi tool tiếp. Nếu xong, trả lời bằng văn bản."
+            current_prompt += (
+                f"\n\n--- BƯỚC ĐÃ THỰC HIỆN ---"
+                f"\nBạn đã quyết định (Thought): {thought}"
+                f"\nBạn đã gọi công cụ (Action): {tool_name}({json.dumps(arguments, ensure_ascii=False)})"
+                f"\nKết quả trả về (Observation): {final_answer}"
+                f"\n------------------------"
+                f"\nLỆNH HỆ THỐNG: Đã có kết quả từ công cụ trên. TUYỆT ĐỐI KHÔNG GỌI LẠI CÔNG CỤ NÀY VỚI CÙNG THAM SỐ. Hãy phân tích kỹ yêu cầu gốc, nếu còn nhiệm vụ chưa làm hãy gọi công cụ tiếp theo. Nếu đã hoàn thành mọi thứ, hãy trả lời bằng văn bản (FINAL_ANSWER)."
+            )
             print(f"🔄 [System]: Nạp kết quả vào bộ nhớ và tiếp tục ReAct Loop...")
 
     return trace_logs

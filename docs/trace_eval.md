@@ -28,35 +28,52 @@ Dán 1 đoạn trích xuất log tiêu biểu từ file `docs/trace_waterfall.js
 [
   {
     "step": 1,
-    "query": "Kiểm tra đơn hàng DH2026002 đang ở đâu",
+    "query": "chuyển trạng thái đang hàng DH2026002 sang Hủy, và tra thông tin đơn hàng DH2026001",
     "action_type": "TOOL_EXECUTION",
-    "tool_name": "order_query",
+    "tool_name": "update_order_status",
     "arguments": {
-      "order_id": "DH2026002"
+      "order_id": "DH2026002",
+      "status": "Hủy"
     },
     "observation": {
       "status": "SUCCESS",
       "order_id": "DH2026002",
-      "data": {
-        "customer_name": "Trần Quốc Bình",
-        "product": "Robot hút bụi",
-        "quantity": 1,
-        "warehouse": "Kho Bình Dương",
-        "location": "Khu xuất kho B-02",
-        "status": "Đã xuất kho",
-        "tracking_number": "VN2026002",
-        "carrier": "Viettel Post"
-      }
+      "new_status": "Hủy",
+      "message": "Đã cập nhật đơn hàng DH2026002 sang trạng thái 'Hủy'."
     },
-    "latency_ms": 1508.63
+    "latency_ms": 5505.37
   },
   {
     "step": 2,
-    "query": "Kiểm tra đơn hàng DH2026002 đang ở đâu",
+    "query": "chuyển trạng thái đang hàng DH2026002 sang Hủy, và tra thông tin đơn hàng DH2026001",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "order_query",
+    "arguments": {
+      "order_id": "DH2026001"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "order_id": "DH2026001",
+      "data": {
+        "customer_name": "Nguyễn Minh Anh",
+        "product": "Máy lọc không khí",
+        "quantity": 1,
+        "warehouse": "Kho Hà Nội",
+        "location": "Kệ A-03-12",
+        "status": "Đang đóng gói",
+        "tracking_number": null,
+        "carrier": null
+      }
+    },
+    "latency_ms": 1394.3
+  },
+  {
+    "step": 3,
+    "query": "chuyển trạng thái đang hàng DH2026002 sang Hủy, và tra thông tin đơn hàng DH2026001",
     "action_type": "FINAL_ANSWER",
-    "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-    "output": "Thông tin đơn hàng DH2026002: Khách hàng Trần Quốc Bình, sản phẩm Robot hút bụi (SL: 1), trạng thái Đã xuất kho, vị trí Khu xuất kho B-02 tại Kho Bình Dương, mã vận đơn VN2026002, đơn vị vận chuyển Viettel Post.",
-    "latency_ms": 10.0
+    "thought": "OpenAI phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
+    "output": "Đã hoàn thành tất cả nhiệm vụ yêu cầu. \n\n1. Trạng thái của đơn hàng DH2026002 đã được cập nhật thành 'Hủy'.\n2. Thông tin đơn hàng DH2026001 như sau:\n   - Khách hàng: Nguyễn Minh Anh\n   - Sản phẩm: Máy lọc không khí (SL: 1)\n   - Trạng thái: Đang đóng gói\n   - Vị trí: Kệ A-03-12 tại Kho Hà Nội\n   - Mã vận đơn: chưa có\n   - Đơn vị vận chuyển: chưa phân công\n\nNếu cần hỗ trợ thêm, hãy cho tôi biết!",
+    "latency_ms": 2369.09
   }
 ]
 ```
