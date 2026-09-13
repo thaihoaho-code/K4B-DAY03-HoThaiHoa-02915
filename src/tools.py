@@ -11,41 +11,41 @@ from typing import Dict, Any
 # ==============================================================================
 
 TOOLS_SCHEMA = [
-    # Tool 1: Đã được định nghĩa mẫu sẵn cho Học viên tham khảo
+    # Tool 1: Tra cứu đơn hàng và vị trí lưu kho
     {
-        "name": "academic_query",
-        "description": "Tra cứu hồ sơ và thông tin học vụ của sinh viên VinUni bằng mã sinh viên.",
+        "name": "order_query",
+        "description": "Tra cứu thông tin đơn hàng, vị trí lưu kho và mã vận đơn bằng mã đơn hàng. Tuyệt đối chỉ dùng tool này khi người dùng cung cấp chính xác mã đơn hàng.",
         "parameters": {
             "type": "object",
             "properties": {
-                "student_id": {
+                "order_id": {
                     "type": "string",
-                    "description": "Mã sinh viên cần tra cứu (ví dụ: 'SV2026001')"
+                    "description": "Mã đơn hàng cần tra cứu (ví dụ: 'DH2026001'). Tuyệt đối không tự bịa ra mã nếu người dùng không cung cấp."
                 }
             },
-            "required": ["student_id"]
+            "required": ["order_id"]
         }
     },
     
     # --------------------------------------------------------------------------
-    # TODO 1.2: HỌC VIÊN HOÀN THIỆN TOOL SCHEMA CHO 'schedule_appointment'
-    # 🎯 YÊU CẦU THIẾT KẾ SCHEMA (JSON SCHEMA STANDARD):
-    # 1. Tool dùng để đặt lịch hẹn tư vấn học vụ với Cố vấn học tập VinUni.
-    # 2. Thiết kế các tham số (properties) để LLM trích xuất:
-    #    - student_id (string): Mã sinh viên cần đặt lịch (ví dụ: 'SV2026001')
-    #    - datetime_str (string): Thời gian hẹn (ví dụ: '14:00 15/09/2026')
-    #    - advisor_name (string): Tên cố vấn học tập
-    # 3. Khai báo danh sách các trường bắt buộc (required).
+    # Tool 2: Cập nhật trạng thái đơn hàng
     # --------------------------------------------------------------------------
     {
-        "name": "schedule_appointment",
-        "description": "Đặt lịch hẹn tư vấn học vụ với Cố vấn học tập VinUni.",
+        "name": "update_order_status",
+        "description": "Cập nhật trạng thái xử lý hoặc vận chuyển của đơn hàng. Chỉ sử dụng khi người dùng cung cấp chính xác mã đơn hàng.",
         "parameters": {
             "type": "object",
             "properties": {
-                # TODO 1.2: Khai báo các thuộc tính tham số cho Tool tại đây...
+                "order_id": {
+                    "type": "string",
+                    "description": "Mã đơn hàng cần cập nhật (ví dụ: 'DH2026001'). Tuyệt đối không tự bịa ra mã."
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Trạng thái mới của đơn hàng, ví dụ: 'Đã bàn giao cho đơn vị vận chuyển'"
+                }
             },
-            "required": [] # TODO 1.2: Khai báo danh sách các trường bắt buộc tại đây...
+            "required": ["order_id", "status"]
         }
     }
 ]
@@ -55,57 +55,68 @@ TOOLS_SCHEMA = [
 # ==============================================================================
 
 MOCK_DATABASE = {
-    "SV2026001": {
-        "full_name": "Nguyễn Văn An",
-        "class": "AI-K4",
-        "gpa": 3.85,
-        "email": "an.nv@vinuni.edu.vn",
-        "status": "Đang học",
-        "advisor": "PGS.TS Nguyễn Văn A"
+    "DH2026001": {
+        "customer_name": "Nguyễn Minh Anh",
+        "product": "Máy lọc không khí",
+        "quantity": 1,
+        "warehouse": "Kho Hà Nội",
+        "location": "Kệ A-03-12",
+        "status": "Đang đóng gói",
+        "tracking_number": None,
+        "carrier": None
     },
-    "SV2026002": {
-        "full_name": "Trần Thị Bình",
-        "class": "AI-K4",
-        "gpa": 3.60,
-        "email": "binh.tt@vinuni.edu.vn",
-        "status": "Đang học",
-        "advisor": "TS. Lê Thị B"
+    "DH2026002": {
+        "customer_name": "Trần Quốc Bình",
+        "product": "Robot hút bụi",
+        "quantity": 1,
+        "warehouse": "Kho Bình Dương",
+        "location": "Khu xuất kho B-02",
+        "status": "Đã xuất kho",
+        "tracking_number": "VN2026002",
+        "carrier": "Viettel Post"
     }
 }
 
 
-def execute_academic_query(student_id: str) -> str:
-    """Thực thi tra cứu học vụ theo mã sinh viên"""
-    student = MOCK_DATABASE.get(student_id.strip().upper())
-    if student:
+def execute_order_query(order_id: str) -> str:
+    """Tra cứu thông tin đơn hàng theo mã đơn."""
+    normalized_order_id = order_id.strip().upper()
+    order = MOCK_DATABASE.get(normalized_order_id)
+    if order:
         return json.dumps({
             "status": "SUCCESS",
-            "student_id": student_id,
-            "data": student
+            "order_id": normalized_order_id,
+            "data": order
         }, ensure_ascii=False)
-    else:
+    return json.dumps({
+        "status": "NOT_FOUND",
+        "message": f"Không tìm thấy đơn hàng có mã '{order_id}'"
+    }, ensure_ascii=False)
+
+
+def execute_update_order_status(order_id: str, status: str) -> str:
+    """Cập nhật trạng thái đơn hàng."""
+    normalized_order_id = order_id.strip().upper()
+    order = MOCK_DATABASE.get(normalized_order_id)
+    if not order:
         return json.dumps({
             "status": "NOT_FOUND",
-            "message": f"Không tìm thấy dữ liệu sinh viên có mã '{student_id}'"
+            "message": f"Không tìm thấy đơn hàng có mã '{order_id}'"
         }, ensure_ascii=False)
 
-
-def execute_schedule_appointment(student_id: str, datetime_str: str, advisor_name: str = "PGS.TS Nguyễn Văn A") -> str:
-    """Thực thi đặt lịch hẹn tư vấn học vụ"""
+    order["status"] = status
     return json.dumps({
         "status": "SUCCESS",
-        "booking_id": f"BK-{student_id}-99",
-        "student_id": student_id,
-        "datetime": datetime_str,
-        "advisor": advisor_name,
-        "message": f"Đặt lịch thành công cho sinh viên {student_id} với {advisor_name} vào lúc {datetime_str}."
+        "order_id": normalized_order_id,
+        "new_status": status,
+        "message": f"Đã cập nhật đơn hàng {normalized_order_id} sang trạng thái '{status}'."
     }, ensure_ascii=False)
 
 
 # Router gọi tool thực tế
 TOOL_ROUTER = {
-    "academic_query": execute_academic_query,
-    "schedule_appointment": execute_schedule_appointment
+    "order_query": execute_order_query,
+    "update_order_status": execute_update_order_status
 }
 
 def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:

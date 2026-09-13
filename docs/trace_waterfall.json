@@ -1,29 +1,34 @@
 [
   {
     "step": 1,
-    "query": "Chào bạn, bạn có thể giới thiệu quy chế học vụ cơ bản của Đại học VinUni không?",
-    "action_type": "FINAL_ANSWER",
-    "thought": "Câu hỏi chung về quy chế học vụ, trả lời trực tiếp không cần gọi Tool.",
-    "output": "[Mock Agent Response]: Xin chào! Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
-    "latency_ms": 2845.93
-  },
-  {
-    "step": 1,
-    "query": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
+    "query": "Kiểm tra đơn hàng DH2026002 đang ở đâu",
     "action_type": "TOOL_EXECUTION",
-    "tool_name": "academic_query",
+    "tool_name": "order_query",
     "arguments": {
-      "student_id": "SV2026001"
+      "order_id": "DH2026002"
     },
-    "observation": {},
-    "latency_ms": 799.12
+    "observation": {
+      "status": "SUCCESS",
+      "order_id": "DH2026002",
+      "data": {
+        "customer_name": "Trần Quốc Bình",
+        "product": "Robot hút bụi",
+        "quantity": 1,
+        "warehouse": "Kho Bình Dương",
+        "location": "Khu xuất kho B-02",
+        "status": "Đã xuất kho",
+        "tracking_number": "VN2026002",
+        "carrier": "Viettel Post"
+      }
+    },
+    "latency_ms": 1508.63
   },
   {
     "step": 2,
-    "query": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
+    "query": "Kiểm tra đơn hàng DH2026002 đang ở đâu",
     "action_type": "FINAL_ANSWER",
     "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-    "output": "Chưa thể trả lời chi tiết do chưa nhận được dữ liệu từ MCP Server (hãy hoàn thành TODO 2.1).",
+    "output": "Thông tin đơn hàng DH2026002: Khách hàng Trần Quốc Bình, sản phẩm Robot hút bụi (SL: 1), trạng thái Đã xuất kho, vị trí Khu xuất kho B-02 tại Kho Bình Dương, mã vận đơn VN2026002, đơn vị vận chuyển Viettel Post.",
     "latency_ms": 10.0
   }
 ]
